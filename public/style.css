@@ -131,3 +131,8 @@ form input[type=text] {
 .creator .message {
   clear: both;
 }
+
+.sortOption {
+  color: blue;
+  text-decoration: underline;
+}

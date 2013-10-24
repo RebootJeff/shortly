@@ -4,6 +4,7 @@ Shortly.LinksView = Backbone.View.extend({
 
   initialize: function(options){
     this.filter = options.filter;
+    this.sortType = options.sortType;
     this.collection.on('sync', this.addAll, this);
     this.collection.fetch();
   },
@@ -14,6 +15,21 @@ Shortly.LinksView = Backbone.View.extend({
   },
 
   addAll: function(){
+    this.collection.comparator = function(a,b){
+      return a - b;
+    };
+
+    if(this.sortType === 'clickTime'){
+      this.collection.comparator = function(a,b){
+        return Date.parse(b.attributes.latestClickTime) - Date.parse(a.attributes.latestClickTime);
+      };
+    } else if (this.sortType === 'visitCount'){
+      this.collection.comparator = function(a,b){
+        return b.attributes.visits - a.attributes.vists;
+      };
+    }
+    this.collection.sort();
+
     this.collection.forEach(this.addOne, this);
   },
 
