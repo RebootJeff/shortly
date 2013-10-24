@@ -62,9 +62,12 @@ end
 get '/links' do
     links = Link.order("visits DESC")
     links.map { |link|
-        latestClickTime = Click.where(link_id: link.id).last.created_at
+        if link.visits > 0
+            latestClickTime = Click.where(link_id: link.id).last.created_at
+        else
+            latestClickTime = 0
+        end
         returnValue = link.as_json.merge(base_url: request.base_url).merge(latestClickTime: latestClickTime)
-        returnValue
     }.to_json
 end
 
@@ -73,7 +76,7 @@ post '/links' do
     uri = URI(data['url'])
     raise Sinatra::NotFound unless uri.absolute?
     link = Link.find_by_url(uri.to_s) ||
-           Link.create( url: uri.to_s, title: get_url_title(uri) )
+        Link.create( url: uri.to_s, title: get_url_title(uri) )
     link.as_json.merge(base_url: request.base_url).to_json
 end
 
