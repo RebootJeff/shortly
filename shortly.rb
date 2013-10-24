@@ -60,7 +60,7 @@ get '/' do
 end
 
 get '/links' do
-    links = Link.order("created_at DESC")
+    links = Link.order("visits DESC")
     links.map { |link|
         link.as_json.merge(base_url: request.base_url)
     }.to_json

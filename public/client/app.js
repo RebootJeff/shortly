@@ -8,12 +8,15 @@ window.Shortly = Backbone.View.extend({
         <li><a href="#" class="create">Shorten</a></li> \
       </ul> \
       </div> \
+      <form class="search"> \
+      </form> \
       <div id="container"></div>'
   ),
 
   events: {
     "click li a.index":  "renderIndexView",
-    "click li a.create": "renderCreateView"
+    "click li a.create": "renderCreateView",
+    "click .searchButton": "filterLinks"
   },
 
   initialize: function(){
@@ -26,17 +29,25 @@ window.Shortly = Backbone.View.extend({
     this.$el.html( this.template() );
     return this;
   },
+  
+  filterLinks: function(e){
+    e.preventDefault();
+    var query = this.$el.find('input').val();
+    this.renderIndexView(e, query);
+  },
 
-  renderIndexView: function(e){
+  renderIndexView: function(e, filter){
     e && e.preventDefault();
+    this.$el.find('.search').html('<input type="text"/><button class="searchButton">Search</button>');
     var links = new Shortly.Links();
-    var linksView = new Shortly.LinksView( {collection: links} );
+    var linksView = new Shortly.LinksView( {filter: filter, collection: links} );
     this.$el.find('#container').html( linksView.render().el );
     this.updateNav('index');
   },
 
   renderCreateView: function(e){
     e && e.preventDefault();
+    this.$el.find('.search').html('');
     var linkCreateView = new Shortly.LinkCreateView();
     this.$el.find('#container').html( linkCreateView.render().el );
     this.updateNav('create');
