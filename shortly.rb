@@ -62,7 +62,9 @@ end
 get '/links' do
     links = Link.order("visits DESC")
     links.map { |link|
-        link.as_json.merge(base_url: request.base_url)
+        latestClickTime = Click.where(link_id: link.id).last.created_at
+        returnValue = link.as_json.merge(base_url: request.base_url).merge(latestClickTime: latestClickTime)
+        returnValue
     }.to_json
 end
 
