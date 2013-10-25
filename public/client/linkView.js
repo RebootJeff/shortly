@@ -10,6 +10,7 @@ Shortly.LinkView = Backbone.View.extend({
         <div class="original"><%= url %></div> \
         <a href="<%= base_url %>/<%= code %>"><%= base_url %>/<%= code %></a> \
         <div class="latestClickTime">Timestamp of last click: <%= latestClickTime %></div> \
+        <a class="stats" href="#" data-code="<%= code %>">See Stats</a> \
       </div>'
   ),
 

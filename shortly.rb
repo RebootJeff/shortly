@@ -87,6 +87,11 @@ get '/:url' do
     redirect link.url
 end
 
+get '/:url/stats' do
+    link = Link.find_by_code params[:url]
+    clickData = Click.where(link_id: link.id)
+    clickData.to_json
+end
 ###########################################################
 # Utility
 ###########################################################

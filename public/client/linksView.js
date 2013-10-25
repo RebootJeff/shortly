@@ -29,7 +29,6 @@ Shortly.LinksView = Backbone.View.extend({
       };
     }
     this.collection.sort();
-
     this.collection.forEach(this.addOne, this);
   },
 

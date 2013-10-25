@@ -4,8 +4,8 @@ window.Shortly = Backbone.View.extend({
       <h1>Shortly</h1> \
       <div class="navigation"> \
       <ul> \
-        <li><a href="#" class="index">All Links</a></li> \
-        <li><a href="#" class="create">Shorten</a></li> \
+        <li><a href="" class="index">All Links</a></li> \
+        <li><a href="" class="create">Shorten</a></li> \
       </ul> \
       </div> \
       <form class="search"> \
@@ -18,19 +18,29 @@ window.Shortly = Backbone.View.extend({
     "click li a.index":  "renderIndexView",
     "click li a.create": "renderCreateView",
     "click .searchButton": "filterLinks",
-    "click .sortOption": "renderIndexView",
+    "click .sortOption": "renderIndexView"
+    // "click .stats": "renderStatsView"
   },
 
   initialize: function(){
     console.log( "Shortly is running" );
     $('body').append(this.render().el);
-    this.renderIndexView(); // default view
+    this.appRouter = new Shortly.Router({ el: this.$el.find('#container') });
+    this.appRouter.on('route', this.updateNav, this);
+    Backbone.history.start({pushstate: true});
+    this.$el.find('.sortBy').html('<p>Sort By:</p><a href="#" class="sortOption" data-sort="clickTime">Most Recent Click</a> <a href="#" class="sortOption" data-sort="visitCount">Visit Count</a>');
+    this.$el.find('.search').html('<input type="text"/><button class="searchButton">Search</button>');
+    this.linksView = renderIndexView();
   },
 
   render: function(){
     this.$el.html( this.template() );
     return this;
   },
+
+   sortLinks: function(){
+    this.linksView.addAll();
+   },
 
   filterLinks: function(e){
     e.preventDefault();
@@ -44,22 +54,27 @@ window.Shortly = Backbone.View.extend({
       e.preventDefault();
       sortType = $(e.target).data('sort');
     }
+    this.appRouter.navigate("", {trigger: true});
     this.$el.find('.sortBy').html('<p>Sort By:</p><a href="#" class="sortOption" data-sort="clickTime">Most Recent Click</a> <a href="#" class="sortOption" data-sort="visitCount">Visit Count</a>');
     this.$el.find('.search').html('<input type="text"/><button class="searchButton">Search</button>');
-    var links = new Shortly.Links();
-    var linksView = new Shortly.LinksView( {filter: filter, sortType: sortType, collection: links} );
-    this.$el.find('#container').html( linksView.render().el );
-    this.updateNav('index');
+    return this;
   },
 
   renderCreateView: function(e){
     e && e.preventDefault();
     this.$el.find('.sortBy').html('');
     this.$el.find('.search').html('');
-    var linkCreateView = new Shortly.LinkCreateView();
-    this.$el.find('#container').html( linkCreateView.render().el );
-    this.updateNav('create');
+    this.appRouter.navigate("create", {trigger: true});
   },
+
+  // renderStatsView: function(e){
+  //   e.preventDefault();
+  //   var code = $(e.target).data('code');
+
+  //   var stats = new Shortly.Stats( {code: code});
+  //   var statsView = new Shortly.StatsView( {code: code, collection: stats} );
+  //   this.$el.find('#container').html( statsView.render().el );
+  // },
 
   updateNav: function(className){
     this.$el.find('.navigation li a')
